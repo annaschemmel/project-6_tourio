@@ -3,11 +3,21 @@ import Place from "@/db/models/Place";
 
 export default async function handler(request, response) {
   await dbConnect();
-
-  if (request.method === "GET") {
-    const places = await Place.find();
-    response.status(200).json(places);
-    return;
+  try {
+    if (request.method === "GET") {
+      const places = await Place.find();
+      response.status(200).json(places);
+      return;
+    }
+    if (request.method === "POST") {
+      const placeData = request.body;
+      await Place.create(placeData);
+      response.status(200).json({ status: "Place created" });
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server not found" });
   }
   response.status(405).json({ status: "Method not allowed" });
 }
